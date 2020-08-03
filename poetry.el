@@ -681,7 +681,7 @@ compilation buffer name."
                                default-directory)))
     (unless (member command '(new init config))
       (poetry-ensure-in-project))
-    (let* ((prog (or (executable-find "poetry")
+    (let* ((prog (or (executable-find "poetry" t)
                      (poetry-error "Could not find 'poetry' executable")))
            (args (if (or (string= command "run")
                          (string= command "config")
@@ -896,7 +896,9 @@ If OPT is non-nil, set an optional dep."
                        ".venv")
              ;; virtualenvs elsewhere
              (car (directory-files
-                   (poetry-get-configuration "virtualenvs.path")
+                   (concat (file-remote-p default-directory)
+                    (poetry-get-configuration "virtualenvs.path")
+                   )
                    t
                    (format "^%s-.+-py.*$"
                            (downcase (replace-regexp-in-string "_" "-" (poetry-get-project-name)))))))
